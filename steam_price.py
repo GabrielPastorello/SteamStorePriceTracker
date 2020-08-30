@@ -14,7 +14,7 @@ def steamPrice(productUrl):
                 elems = soup.select('#game_area_purchase > div.game_area_purchase_game_wrapper > div > div.game_purchase_action > div > div.discount_block.game_purchase_discount > div.discount_prices > div.discount_final_price')
     price_str = elems[0].text.strip()
     price_str = price_str.replace(',', '.')
-    price = float(price_str[3:])
+    price = float(price_str[2:]) # Depending on your currency symbol you might have to change the interval here
     return price
 
 def gameTitle(productUrl):
@@ -42,6 +42,14 @@ def sendEmail(price, productUrl):
     print('Email has been sent!')
     conn.quit()
 
+def checkPrice(games):
+    for game in games:
+        if game['email'] != True:
+            price = steamPrice(game['url'])
+            if price < game['price']:
+                sendEmail(price, game['url'])
+                game['email'] = True
+
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36'}
 cookies = {'birthtime': '568022401', 'mature_content': '1' }
 
@@ -62,65 +70,26 @@ CODIW = 'https://store.steampowered.com/app/292730/Call_of_Duty_Infinite_Warfare
 madMax = 'https://store.steampowered.com/app/234140/Mad_Max/'
 CODG = 'https://store.steampowered.com/app/209160/Call_of_Duty_Ghosts/'
 
-while(True):
 
 # Remember to also add any new game here with the price of your choice
+games = [{'url': univSandbox, 'price': 14, 'email': False}, # 'price': maximum price for the bot to send the email
+         {'url': grimFand, 'price': 7, 'email': False},
+         {'url': SRGat, 'price': 5, 'email': False},
+         {'url': FC4, 'price': 20, 'email': False},
+         {'url': FCPrimal, 'price': 20, 'email': False},
+         {'url': WD2, 'price': 20, 'email': False},
+         {'url': ACOrigins, 'price': 40, 'email': False},
+         {'url': GTASA, 'price': 6, 'email': False},
+         {'url': ShadowW2, 'price': 20, 'email': False},
+         {'url': TCR6, 'price': 8, 'email': False},
+         {'url': MCX, 'price': 10, 'email': False},
+         {'url': CODIW, 'price': 4, 'email': False},
+         {'url': madMax, 'price': 8, 'email': False},
+         {'url': legoB2, 'price': 7, 'email': False},
+         {'url': CODG, 'price': 20, 'email': False}]
 
-    price = steamPrice(univSandbox)
-    if price < 14: # Maximum price for the bot to send the email
-        sendEmail(price, univSandbox)
+while(True):
 
-    price = steamPrice(grimFand)
-    if price < 7: 
-        sendEmail(price, grimFand)
-
-    price = steamPrice(SRGat)
-    if price < 5:
-        sendEmail(price, SRGat)
-
-    price = steamPrice(FC4)
-    if price < 20:
-        sendEmail(price, FC4)
-
-    price = steamPrice(FCPrimal)
-    if price < 20:
-        sendEmail(price, FCPrimal)
-
-    price = steamPrice(WD2)
-    if price < 20:
-        sendEmail(price, WD2)
-
-    price = steamPrice(ACOrigins)
-    if price < 40:
-        sendEmail(price, ACOrigins)
-
-    price = steamPrice(GTASA)
-    if price < 6:
-        sendEmail(price, GTASA)
-
-    price = steamPrice(ShadowW2)
-    if price < 20:
-        sendEmail(price, ShadowW2)
-
-    price = steamPrice(TCR6)
-    if price < 8:
-        sendEmail(price, TCR6)
-
-    price = steamPrice(MCX)
-    if price < 10:
-        sendEmail(price, MCX)
-
-    price = steamPrice(CODIW)
-    if price < 4:
-        sendEmail(price, CODIW)
-
-    price = steamPrice(madMax)
-    if price < 8:
-        sendEmail(price, madMax)
-
-    price = steamPrice(CODG)
-    if price < 20:
-        sendEmail(price, CODG)
-
-    time.sleep(3600)
+    checkPrice(games)
+    time.sleep(3600) # Here is the time between each run; right now is at 1 hour (3600s)
     
